@@ -27,7 +27,7 @@ public:
     }
 
     /// @brief Returns the shape of the matrix.
-    size_t shape() const
+    size_t shape() const noexcept
     {
         return rows() * cols();
     }

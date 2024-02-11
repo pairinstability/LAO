@@ -18,10 +18,10 @@ $<$<CXX_COMPILER_ID:GNU>:$<BUILD_INTERFACE:-Wall;-Wextra;-Wpedantic>>
 $<$<CXX_COMPILER_ID:Clang>:$<BUILD_INTERFACE:-Wall;-Wextra;-Wpedantic;-Wno-c99-extensions>>
 )
 
-#option(BUILD_TESTS "Build unit tests" ON)
-#if (BUILD_TESTS)
-#    add_subdirectory(tests)
-#endif()
+option(BUILD_TESTS "Build unit tests" ON)
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
 
 #option(BUILD_BENCH "Build benchmarking" ON)
 #if (BUILD_BENCH)

@@ -20,8 +20,7 @@ For mathematics operations, expression templates are used to achieve delayed eva
 Classes and aliases
 ===
 
-
-`DenseMatrix<typename Scalar, size_t Rows, size_t Cols>`
+`Matrix<typename Scalar, size_t Rows, size_t Cols>`
 ---
 
 Class for dense matrices, stored in row-major form.
@@ -39,7 +38,7 @@ specializations:
 - `Hermitian`
 - `Triangular`
 
-These specializations only modify the allocator to make use of more efficient allocation strategies for these particular matrix types.
+These specializations may modify the backing storage and eliminate certain methods as they are not applicable.
 
 
 constructors:
@@ -93,7 +92,6 @@ member functions:
 - `rview(row number)` submatrix view of a row.
 - `cviews(first col, last col)` submatrix view of multiple columns.
 - `rviews(first row, last row)` submatrix view of multiple rows.
-
 
 
 `SparseMatrix<typename Scalar, size_t Rows, size_t Cols>`

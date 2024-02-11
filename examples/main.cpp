@@ -3,11 +3,11 @@
 
 int main()
 {
-    lao::DenseMatrix<double, 2, 2> a{ {1, 2}, {2,2} };
-    lao::DenseMatrix<double, 3, 3> b{ {9, 8, 3}, {2,1,4}, {4,0,9}};
-    lao::DenseMatrix<double, 3, 3> c(lao::filltype::rand);
+    lao::Matrix<double, 2, 2> a{ {1, 2}, {2,2} };
+    lao::Matrix<double, 3, 3> b{ {9, 8, 3}, {2,1,4}, {4,0,9}};
+    lao::Matrix<double, 3, 3> c(lao::filltype::rand);
 
-    std::cout << a << std::endl;
+    std::cout << a(1,1) << std::endl;
     std::cout << b << std::endl;
     std::cout << c << std::endl;
 
