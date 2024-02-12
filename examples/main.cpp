@@ -17,10 +17,13 @@ int main()
     lao::Matrix<double, 2, 3> I { { 1, 2, 1}, {2, 2, 1}};
     lao::Matrix<double, 3, 2> J { { 5, 6 }, {1, 5}, {2,1}};
     lao::Matrix<double, 2, 2> Z;
+    lao::Matrix<double, 1, 2> P;
 
     Z = I * J;
+    P = A != B;
 
     std::cout << Z << std::endl;
+    std::cout << P << std::endl;
 
 
     /*
