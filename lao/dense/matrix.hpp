@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
 #include <lao/core/math.hpp>
 #include <random>
@@ -30,7 +31,7 @@ enum class filltype {
 /// It is templated with a Scalar parameter, and a Row and Column.
 /// The storage mechanism is using std::vector with row-major ordering.
 template <typename S, size_t R, size_t C>
-class Matrix {
+class Matrix : public MatrixExpression<Matrix<S, R, C>, S, R, C> {
 public:
     using value_type = S;
     using storage_type = std::vector<value_type>;
@@ -99,15 +100,14 @@ public:
         return *this;
     }
 
-    /// @brief Copy assignment operator.
-    template <typename S2, size_t R2, size_t C2, typename E1, typename E2>
-    Matrix<S, R2, C2>& operator=(const MatrixAddition<S2, R2, C2, E1, E2>& other)
+    /// @brief Operator for converting MatrixExpression <-> Matrix
+    template <typename E>
+    Matrix(const MatrixExpression<E, S, R, C>& expr)
+        : m_elements(R * C, value_type(0))
     {
-        for (size_t i = 0; i < R2; ++i)
-            for (size_t j = 0; j < C2; ++j)
-                m_elements[i * C + j] = other(i, j);
-
-        return *this;
+        for (size_t i = 0; i < R; ++i)
+            for (size_t j = 0; j < C; ++j)
+                m_elements[i * C + j] = static_cast<value_type>(expr(i, j));
     }
 
     /// @brief operator overload for () to access elements.

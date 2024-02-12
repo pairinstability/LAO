@@ -3,13 +3,16 @@
 
 int main()
 {
-    lao::Matrix<double, 1, 2> A { { 1, 2 } };
+    lao::Matrix<double, 1, 2> A { { 5, 6 } };
     lao::Matrix<double, 1, 2> B { { 2, 3 } };
-    lao::Matrix<double, 1, 2> C { { 3, 4 } };
+    lao::Matrix<double, 1, 2> C { { 3, 1 } };
     lao::Matrix<double, 1, 2> S;
-    S = A + B + C;
+    lao::Matrix<double, 1, 2> E;
+    S = A + B + C - B;
+    E = A - B;
 
     std::cout << S << std::endl;
+    std::cout << E << std::endl;
 
     /*
         auto lambda = []() -> double {

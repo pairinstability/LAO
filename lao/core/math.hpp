@@ -14,13 +14,15 @@
 #ifndef LAO_CORE_MATH_H_
 #define LAO_CORE_MATH_H_
 
+#include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
+#include <iostream>
 
 namespace lao {
 
 /// @brief Matrix addition.
 template <typename S, size_t R, size_t C, typename E1, typename E2>
-class MatrixAddition {
+class MatrixAddition : public MatrixExpression<MatrixAddition<S, R, C, E1, E2>, S, R, C> {
 public:
     using left_expr = E1;
     using right_expr = E2;
@@ -41,18 +43,41 @@ private:
     const right_expr& m_rhs;
 };
 
-template <typename S, size_t R, size_t C>
-inline MatrixAddition<S, R, C, Matrix<S, R, C>, Matrix<S, R, C>>
-operator+(const Matrix<S, R, C>& lhs, const Matrix<S, R, C>& rhs)
+/// @brief operator+ overload for matrix addition.
+template <typename S, size_t R, size_t C, typename E1, typename E2>
+auto operator+(const MatrixExpression<E1, S, R, C>& lhs, const MatrixExpression<E2, S, R, C>& rhs)
 {
-    return MatrixAddition<S, R, C, Matrix<S, R, C>, Matrix<S, R, C>>(lhs, rhs);
+    return MatrixAddition<S, R, C, MatrixExpression<E1, S, R, C>, MatrixExpression<E2, S, R, C>>(lhs, rhs);
 }
 
+/// @brief Matrix subtraction.
 template <typename S, size_t R, size_t C, typename E1, typename E2>
-inline MatrixAddition<S, R, C, MatrixAddition<S, R, C, E1, E2>, Matrix<S, R, C>>
-operator+(const MatrixAddition<S, R, C, E1, E2>& lhs, const Matrix<S, R, C>& rhs)
+class MatrixSubtraction : public MatrixExpression<MatrixSubtraction<S, R, C, E1, E2>, S, R, C> {
+public:
+    using left_expr = E1;
+    using right_expr = E2;
+
+    MatrixSubtraction(const left_expr& lhs, const right_expr& rhs)
+        : m_lhs(lhs)
+        , m_rhs(rhs)
+    {
+    }
+
+    S operator()(size_t row, size_t col) const
+    {
+        return m_lhs(row, col) - m_rhs(row, col);
+    }
+
+private:
+    const left_expr& m_lhs;
+    const right_expr& m_rhs;
+};
+
+/// @brief operator- overload for matrix subtraction.
+template <typename S, size_t R, size_t C, typename E1, typename E2>
+auto operator-(const MatrixExpression<E1, S, R, C>& lhs, const MatrixExpression<E2, S, R, C>& rhs)
 {
-    return MatrixAddition<S, R, C, MatrixAddition<S, R, C, E1, E2>, Matrix<S, R, C>>(lhs, rhs);
+    return MatrixSubtraction<S, R, C, MatrixExpression<E1, S, R, C>, MatrixExpression<E2, S, R, C>>(lhs, rhs);
 }
 
 /*
