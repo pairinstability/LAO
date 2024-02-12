@@ -31,16 +31,6 @@ For now, matrix size is determined at compile-time. Runtime support will be adde
 
 Currently dense matrices are backed by `std::vector`. Ideally, `std::mdspan` but thats a C++23 feature that isn't supported by all compilers.
 
-
-specializations:
-- `Vector`
-- `Symmetric`
-- `Hermitian`
-- `Triangular`
-
-These specializations may modify the backing storage and eliminate certain methods as they are not applicable.
-
-
 constructors:
 
 - `Matrix()`

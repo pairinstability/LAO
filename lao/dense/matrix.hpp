@@ -29,12 +29,13 @@ enum class filltype {
 /// @details A matrix is represented by a number of rows and columns,
 /// noted as `row x column`.
 /// It is templated with a Scalar parameter, and a Row and Column.
-/// The storage mechanism is using std::vector with row-major ordering.
-template <typename S, size_t R, size_t C>
+/// The default storage mechanism is using std::vector with row-major ordering,
+/// though this can be swapped out assuming it has a linear access pattern.
+template <typename S, size_t R, size_t C, typename B>
 class Matrix : public MatrixExpression<Matrix<S, R, C>, S, R, C> {
 public:
     using value_type = S;
-    using storage_type = std::vector<value_type>;
+    using storage_type = B;
 
     /// @brief Default constructor which zero initializes the matrix.
     Matrix()
