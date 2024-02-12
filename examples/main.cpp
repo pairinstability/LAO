@@ -14,6 +14,15 @@ int main()
     std::cout << S << std::endl;
     std::cout << E << std::endl;
 
+    lao::Matrix<double, 2, 3> I { { 1, 2, 1}, {2, 2, 1}};
+    lao::Matrix<double, 3, 2> J { { 5, 6 }, {1, 5}, {2,1}};
+    lao::Matrix<double, 2, 2> Z;
+
+    Z = I * J;
+
+    std::cout << Z << std::endl;
+
+
     /*
         auto lambda = []() -> double {
             static double val = 1.0;
