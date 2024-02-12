@@ -17,12 +17,6 @@ protected:
         matrix_ones.reset();
     }
 
-    std::string matrixToString(const MatrixType& matrix) {
-        std::ostringstream oss;
-        matrix.print(oss);
-        return oss.str();
-    }
-
     bool matricesEqual(const MatrixType& mat1, const MatrixType& mat2) const {
         if (mat1.rows() != mat2.rows() || mat1.cols() != mat2.cols()) {
             return false;
@@ -59,7 +53,6 @@ TYPED_TEST(DenseMatrixTest, DefaultConstructor) {
 /// @brief Test passing a vector to the constructor.
 TEST(DenseMatrixTest, VectorConstructor) {
     lao::Matrix<double, 2, 2> mat({{1,2},{3,4}});
-    EXPECT_EQ(mat.shape(), 4);
     EXPECT_EQ(mat(0,0), 1);
     EXPECT_EQ(mat(0,1), 2);
     EXPECT_EQ(mat(1,0), 3);

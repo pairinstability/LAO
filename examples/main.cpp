@@ -1,27 +1,26 @@
-#include <lao/lao.hpp>
 #include <iostream>
+#include <lao/lao.hpp>
 
 int main()
 {
-    lao::Matrix<double, 2, 2> a{ {1, 2}, {2,2} };
-    lao::Matrix<double, 3, 3> b{ {9, 8, 3}, {2,1,4}, {4,0,9}};
-    lao::Matrix<double, 3, 3> c(lao::filltype::rand);
+    lao::Matrix<double, 1, 2> A { { 1, 2 } };
+    lao::Matrix<double, 1, 2> B { { 2, 3 } };
+    lao::Matrix<double, 1, 2> C { { 3, 4 } };
+    lao::Matrix<double, 1, 2> S;
+    S = A + B + C;
 
-    std::cout << a(1,1) << std::endl;
-    std::cout << b << std::endl;
-    std::cout << c << std::endl;
+    std::cout << S << std::endl;
 
+    /*
+        auto lambda = []() -> double {
+            static double val = 1.0;
+            return val++;
+        };
 
-    auto lambda = []() -> double {
-        static double val = 1.0;
-        return val++;
-    };
+        c.fillf(lambda);
 
-    c.fillf(lambda);
-
-    std::cout << c << std::endl;
-
-
+    //    std::cout << c << std::endl;
+    */
 
     return 0;
 }

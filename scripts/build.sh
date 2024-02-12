@@ -38,9 +38,15 @@ else
     for arg in "$@"; do
         if [ "$(eval echo \$BUILD_$arg)" = true ]; then
             cmake -GNinja -DBUILD_${arg^^}=ON -DCMAKE_BUILD_TYPE=Release "$ROOT_SRC_DIR"
-            for target in $(grep -oP 'create_test\((\w+)\)' "$ROOT_SRC_DIR/tests/CMakeLists.txt" | grep -oP '\(\K\w+'); do
-                ninja "$target"
-            done
+
+            # TODO: make this less hacky, later
+            if [ "$arg" = "tests" ]; then
+                for target in $(grep -oP 'create_test\((\w+)\)' "$ROOT_SRC_DIR/tests/CMakeLists.txt" | grep -oP '\(\K\w+'); do
+                    ninja "$target"
+                done
+            else
+                ninja run${arg}
+            fi
         fi
     done
 fi

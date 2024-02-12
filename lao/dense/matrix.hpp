@@ -1,7 +1,5 @@
 /// matrix.hpp implements the Matrix class as a class for dense matrix operations, and
-/// the partial specializations of this to implement row and column vectors. They all
-/// derive from a MatrixExpression base class, which represents a fundamental expression
-/// so these objects can be used with arithmetic operations.
+/// the partial specializations of this to implement row and column vectors.
 
 #ifndef LAO_DENSE_MATRIX_H_
 #define LAO_DENSE_MATRIX_H_
@@ -10,7 +8,8 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
-#include <lao/core/expression.hpp>
+#include <lao/core/forward.hpp>
+#include <lao/core/math.hpp>
 #include <random>
 #include <stdexcept>
 #include <vector>
@@ -26,44 +25,46 @@ enum class filltype {
 };
 
 /// @brief The class representing a dense matrix.
-/// @details This derives from the MatrixExpression class, and is a leaf in the
-/// expression tree.
-/// A matrix is represented by a number of rows and columns, noted as `row x column`.
+/// @details A matrix is represented by a number of rows and columns,
+/// noted as `row x column`.
+/// It is templated with a Scalar parameter, and a Row and Column.
 /// The storage mechanism is using std::vector with row-major ordering.
-template <typename Scalar, size_t Rows, size_t Cols>
-class Matrix : public MatrixExpression<Scalar, Matrix<Scalar, Rows, Cols>> {
+template <typename S, size_t R, size_t C>
+class Matrix {
 public:
-    using value_type = Scalar;
+    using value_type = S;
     using storage_type = std::vector<value_type>;
 
     /// @brief Default constructor which zero initializes the matrix.
     Matrix()
-        : m_elements(Rows * Cols, value_type(0))
+        : m_elements(R * C, value_type(0))
     {
     }
 
     /// @brief Constructor taking a vector of elements to construct a matrix.
-    Matrix(const std::vector<Scalar>& elements)
+    Matrix(const std::vector<S>& elements)
     {
-        if (elements.size() != Rows * Cols) throw std::invalid_argument("Initializer list does not match matrix size.");
+        if (elements.size() != R * C)
+            throw std::invalid_argument("Initializer list does not match matrix size.");
         m_elements = elements;
     }
 
     /// @brief Constructor to initialize with an initializer list.
     Matrix(std::initializer_list<std::initializer_list<value_type>> list)
-        : m_elements(Rows * Cols, value_type(0))
+        : m_elements(R * C, value_type(0))
     {
-        if (list.size() != Rows || list.begin()->size() != Cols) throw std::invalid_argument("Initializer list does not match matrix size.");
+        if (list.size() != R || list.begin()->size() != C)
+            throw std::invalid_argument("Initializer list does not match matrix size.");
         size_t row = 0;
         for (const auto& il : list) {
-            std::copy(il.begin(), il.end(), m_elements.begin() + row * Cols);
+            std::copy(il.begin(), il.end(), m_elements.begin() + row * C);
             ++row;
         }
     }
 
     /// @brief Constructor to initialize the matrix with a fill type.
     Matrix(filltype fill)
-        : m_elements(Rows * Cols, value_type(0))
+        : m_elements(R * C, value_type(0))
     {
         if (fill == filltype::zeros) {
             // Set the matrix to all zeros
@@ -91,7 +92,6 @@ public:
     {
     }
 
-    /// @brief Copy assignment operator.
     Matrix& operator=(const Matrix& other)
     {
         if (&other != this)
@@ -99,32 +99,43 @@ public:
         return *this;
     }
 
+    /// @brief Copy assignment operator.
+    template <typename S2, size_t R2, size_t C2, typename E1, typename E2>
+    Matrix<S, R2, C2>& operator=(const MatrixAddition<S2, R2, C2, E1, E2>& other)
+    {
+        for (size_t i = 0; i < R2; ++i)
+            for (size_t j = 0; j < C2; ++j)
+                m_elements[i * C + j] = other(i, j);
+
+        return *this;
+    }
+
     /// @brief operator overload for () to access elements.
     value_type& operator()(size_t row, size_t col)
     {
-        if (row > Rows || col > Cols)
+        if (row > R || col > C)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row * Cols + col];
+        return m_elements[row * C + col];
     }
 
     /// @brief operator overload for () to access elements.
     const value_type& operator()(size_t row, size_t col) const
     {
-        if (row > Rows || col > Cols)
+        if (row > R || col > C)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row * Cols + col];
+        return m_elements[row * C + col];
     }
 
     /// @brief Returns the number of rows.
     size_t rows() const noexcept
     {
-        return Rows;
+        return R;
     }
 
     /// @brief Returns the number of columns.
     size_t cols() const noexcept
     {
-        return Cols;
+        return C;
     }
 
     /// @brief Checks if the matrix is empty.
@@ -148,10 +159,10 @@ public:
     /// @brief Sets all elements to the identity matrix.
     void eye()
     {
-        if constexpr (Rows == Cols) {
+        if constexpr (R == C) {
             std::fill(m_elements.begin(), m_elements.end(), value_type(0));
-            for (size_t i = 0; i < Rows; ++i) {
-                m_elements[i * Cols + i] = value_type(1);
+            for (size_t i = 0; i < R; ++i) {
+                m_elements[i * C + i] = value_type(1);
             }
         } else {
             throw std::logic_error("Identity matrix is only defined for square matrices.");
@@ -188,14 +199,15 @@ public:
     }
 
     /// @brief Printing method implementation, for printing the matrix.
-    void print(std::ostream& os) const
+    friend std::ostream& operator<<(std::ostream& os, const Matrix<S, R, C>& matrix)
     {
-        for (size_t i = 0; i < Rows; ++i) {
-            for (size_t j = 0; j < Cols; ++j) {
-                os << m_elements[i * Cols + j] << " ";
+        for (size_t i = 0; i < R; ++i) {
+            for (size_t j = 0; j < C; ++j) {
+                os << matrix(i, j) << " ";
             }
-            os << "\n";
+            os << std::endl;
         }
+        return os;
     }
 
 private:
@@ -207,27 +219,35 @@ private:
 /// its ambiguous, given the vectors are specialized on either 1 row or 1 column, and a 1x1
 /// matrix is both. Although this is just a 1x1 matrix and it doesn't need to be a vector,
 /// its easier to store it like that for math operations although it isn't efficient.
-template <typename Scalar>
-class Matrix<Scalar, 1, 1> : public MatrixExpression<Scalar, Matrix<Scalar, 1, 1>> {
+template <typename S>
+class Matrix<S, 1, 1> {
 public:
-    using value_type = Scalar;
+    using value_type = S;
     using storage_type = std::vector<value_type>;
 
-    /// @brief Default constructor which zero initializes the vector.
+    /// @brief Default constructor which zero initializes the matrix.
     Matrix()
         : m_elements(1, value_type(0))
     {
     }
 
-    /// @brief Constructor taking a vector of elements to construct a vector.
-    Matrix(const std::vector<Scalar>& elements)
+    /// @brief Constructor taking a vector of elements to construct a matrix.
+    Matrix(const std::vector<S>& elements)
     {
         static_assert(elements.size() == 1, "Initializer list size does not match matrix size.");
         m_elements = elements;
     }
 
+    /// @brief Constructor to initialize with an initializer list.
+    Matrix(std::initializer_list<std::initializer_list<value_type>> list)
+        : m_elements(1, value_type(0))
+    {
+        if (list.size() != 1 || list.begin()->size() != 1)
+            throw std::invalid_argument("Initializer list does not match matrix size.");
+        std::copy(list.begin(), list.end(), m_elements.begin());
+    }
+
     /// @brief Constructor to initialize the matrix with a fill type.
-    /// @details As this is a vector, it does not support the eye fill.
     Matrix(filltype fill)
         : m_elements(1, value_type(0))
     {
@@ -256,7 +276,6 @@ public:
     {
     }
 
-    /// @brief Copy assignment operator.
     Matrix& operator=(const Matrix& other)
     {
         if (&other != this)
@@ -264,35 +283,44 @@ public:
         return *this;
     }
 
-    /// @brief operator overload for () to access elements.
-    value_type& operator()(size_t index)
+    /// @brief Copy assignment operator.
+    template <typename S2, size_t R2, size_t C2, typename E1, typename E2>
+    Matrix<S, R2, C2>& operator=(const MatrixAddition<S2, R2, C2, E1, E2>& other)
     {
-        return m_elements[index];
+        m_elements[0] = other(0, 0);
+
+        return *this;
     }
 
     /// @brief operator overload for () to access elements.
-    const value_type& operator()(size_t index) const
-    {
-        return m_elements[index];
-    }
-
-    /// @brief Operator overload for () to access elements.
     value_type& operator()(size_t row, size_t col)
     {
-        if (row != 0 || col != 0)
+        if (row > 0 || col > 0)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row];
+        return m_elements[0];
     }
 
-    /// @brief Operator overload for () to access elements.
+    /// @brief operator overload for () to access elements.
     const value_type& operator()(size_t row, size_t col) const
     {
-        if (row != 0 || col != 0)
+        if (row > 0 || col > 0)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row];
+        return m_elements[0];
     }
 
-    /// @brief Checks if the vector is empty.
+    /// @brief Returns the number of rows.
+    size_t rows() const noexcept
+    {
+        return 1;
+    }
+
+    /// @brief Returns the number of columns.
+    size_t cols() const noexcept
+    {
+        return 1;
+    }
+
+    /// @brief Checks if the matrix is empty.
     bool is_empty() const
     {
         return m_elements.empty();
@@ -310,8 +338,13 @@ public:
         m_elements[0] = value_type(1);
     }
 
+    /// @brief Sets all elements to the identity matrix.
+    void eye()
+    {
+        throw std::logic_error("This is a 1x1 matrix.");
+    }
+
     /// @brief Sets all elements to random values in the [0, 1] interval.
-    /// @details Only works if the Scalar type is not an int.
     void rand()
     {
         std::random_device rd;
@@ -332,29 +365,17 @@ public:
         m_elements[0] = lambda();
     }
 
-    /// @brief Resets the vector to empty.
+    /// @brief Resets the matrix to empty.
     void reset()
     {
         m_elements.clear();
     }
 
-    /// @brief Returns the number of rows.
-    size_t rows() const noexcept
+    /// @brief Printing method implementation, for printing the matrix.
+    friend std::ostream& operator<<(std::ostream& os, const Matrix<S, 1, 1>& matrix)
     {
-        return 1;
-    }
-
-    /// @brief Returns the number of columns.
-    size_t cols() const noexcept
-    {
-        return 1;
-    }
-
-    /// @brief Printing method implementation, for printing the vector.
-    void print(std::ostream& os) const
-    {
-        os << m_elements[0] << " ";
-        os << "\n";
+        os << matrix(0,0) << std::endl;
+        return os;
     }
 
 private:

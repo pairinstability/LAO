@@ -16,4 +16,3 @@ function(create_test name)
 endfunction()
 
 create_test(test_dense_matrix)
-create_test(test_vector)

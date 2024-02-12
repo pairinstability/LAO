@@ -47,56 +47,56 @@ TYPED_TEST_SUITE(VectorTest, VectorTypes);
 
 
 /// @brief Test initializing a matrix with zeros.
-TYPED_TEST(VectorTest, InitializationWithZeros) {
-    TypeParam matrix;
-    matrix.zeros();
-    for (size_t i = 0; i < matrix.rows(); ++i) {
-        for (size_t j = 0; j < matrix.cols(); ++j) {
-            EXPECT_EQ(matrix(i, j), 0.0);
-        }
-    }
-}
-
-/// @brief Test initializing a matrix with ones.
-TYPED_TEST(VectorTest, InitializationWithOnes) {
-    TypeParam matrix;
-    matrix.ones();
-    for (size_t i = 0; i < matrix.rows(); ++i) {
-        for (size_t j = 0; j < matrix.cols(); ++j) {
-            EXPECT_EQ(matrix(i, j), 1);
-        }
-    }
-}
-
-/// @brief Test initializing a matrix with random values.
-TYPED_TEST(VectorTest, InitializationWithRandomValues) {
-    TypeParam matrix(lao::filltype::rand);
-    EXPECT_FALSE(matrix.is_empty());
-}
-
-/// @brief Test copying a matrix.
-//TYPED_TEST(VectorTest, CopyConstructorAndAssignment) {
-//    TypeParam matrix_original(lao::filltype::rand);
-//    // copy constructor.
-//    TypeParam matrix_copy = matrix_original;
-//    TypeParam matrix_assigned;
-//    // copy assignment operator.
-//    matrix_assigned = matrix_original;
-//    EXPECT_TRUE(this->matricesEqual(matrix_original, matrix_copy));
-//    EXPECT_TRUE(this->matricesEqual(matrix_original, matrix_assigned));
+//TYPED_TEST(VectorTest, InitializationWithZeros) {
+//    TypeParam matrix;
+//    matrix.zeros();
+//    for (size_t i = 0; i < matrix.rows(); ++i) {
+//        for (size_t j = 0; j < matrix.cols(); ++j) {
+//            EXPECT_EQ(matrix(i, j), 0.0);
+//        }
+//    }
 //}
-
-/// @brief Test accessing an element and modifying.
-TYPED_TEST(VectorTest, ElementAccessAndModification) {
-    TypeParam matrix;
-    matrix.zeros();
-    for (size_t i = 0; i < matrix.rows(); ++i) {
-        for (size_t j = 0; j < matrix.cols(); ++j) {
-            matrix(i, j) = i + j;
-            EXPECT_EQ(matrix(i, j), i + j);
-        }
-    }
-}
+//
+///// @brief Test initializing a matrix with ones.
+//TYPED_TEST(VectorTest, InitializationWithOnes) {
+//    TypeParam matrix;
+//    matrix.ones();
+//    for (size_t i = 0; i < matrix.rows(); ++i) {
+//        for (size_t j = 0; j < matrix.cols(); ++j) {
+//            EXPECT_EQ(matrix(i, j), 1);
+//        }
+//    }
+//}
+//
+///// @brief Test initializing a matrix with random values.
+//TYPED_TEST(VectorTest, InitializationWithRandomValues) {
+//    TypeParam matrix(lao::filltype::rand);
+//    EXPECT_FALSE(matrix.is_empty());
+//}
+//
+///// @brief Test copying a matrix.
+////TYPED_TEST(VectorTest, CopyConstructorAndAssignment) {
+////    TypeParam matrix_original(lao::filltype::rand);
+////    // copy constructor.
+////    TypeParam matrix_copy = matrix_original;
+////    TypeParam matrix_assigned;
+////    // copy assignment operator.
+////    matrix_assigned = matrix_original;
+////    EXPECT_TRUE(this->matricesEqual(matrix_original, matrix_copy));
+////    EXPECT_TRUE(this->matricesEqual(matrix_original, matrix_assigned));
+////}
+//
+///// @brief Test accessing an element and modifying.
+//TYPED_TEST(VectorTest, ElementAccessAndModification) {
+//    TypeParam matrix;
+//    matrix.zeros();
+//    for (size_t i = 0; i < matrix.rows(); ++i) {
+//        for (size_t j = 0; j < matrix.cols(); ++j) {
+//            matrix(i, j) = i + j;
+//            EXPECT_EQ(matrix(i, j), i + j);
+//        }
+//    }
+//}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

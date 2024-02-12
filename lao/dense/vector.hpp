@@ -116,7 +116,7 @@ public:
     }
 
     /// @brief Checks if the vector is empty.
-    bool is_empty() const
+    bool isEmpty() const
     {
         return m_elements.empty();
     }
@@ -151,7 +151,7 @@ public:
     }
 
     /// @brief Sets all elements using a lambda function.
-    void fillf(std::function<value_type()> lambda)
+    void fillF(std::function<value_type()> lambda)
     {
         for (size_t i = 0; i < Rows; ++i)
             m_elements[i] = lambda();
@@ -288,7 +288,7 @@ public:
     }
 
     /// @brief Checks if the vector is empty.
-    bool is_empty() const
+    bool isEmpty() const
     {
         return m_elements.empty();
     }
@@ -323,7 +323,7 @@ public:
     }
 
     /// @brief Sets all elements using a lambda function.
-    void fillf(std::function<value_type()> lambda)
+    void fillF(std::function<value_type()> lambda)
     {
         for (size_t i = 0; i < Cols; ++i)
             m_elements[i] = lambda();
