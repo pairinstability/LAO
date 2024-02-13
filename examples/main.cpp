@@ -6,36 +6,44 @@ int main()
     lao::Matrix<double, 1, 2> A { { 5, 6 } };
     lao::Matrix<double, 1, 2> B { { 2, 3 } };
     lao::Matrix<double, 1, 2> C { { 3, 1 } };
-    lao::Matrix<double, 1, 2> S;
+    lao::Matrix<double, 1, 2> D;
     lao::Matrix<double, 1, 2> E;
-    S = A + B + C - B;
+    D = A + B + C - B;
     E = A - B;
 
-    std::cout << S << std::endl;
+    std::cout << D << std::endl;
     std::cout << E << std::endl;
 
-    lao::Matrix<double, 2, 3> I { { 1, 2, 1}, {2, 2, 1}};
-    lao::Matrix<double, 3, 2> J { { 5, 6 }, {1, 5}, {2,1}};
-    lao::Matrix<double, 2, 2> Z;
-    lao::Matrix<double, 1, 2> P;
+    lao::Matrix<double, 2, 3> F { { 1, 2, 1}, {2, 2, 1}};
+    lao::Matrix<double, 3, 2> G { { 5, 6 }, {1, 5}, {2,1}};
+    lao::Matrix<double, 2, 2> H;
+    lao::Matrix<double, 1, 2> I;
 
-    Z = I * J;
-    P = A != B;
+    H = F * G;
+    I = A != B;
 
-    std::cout << Z << std::endl;
-    std::cout << P << std::endl;
+    std::cout << H << std::endl;
+    std::cout << I << std::endl;
 
+    lao::Matrix<double, 6, 6>J(lao::filltype::rand);
 
-    /*
-        auto lambda = []() -> double {
-            static double val = 1.0;
-            return val++;
-        };
+    std::cout << J << std::endl;
 
-        c.fillf(lambda);
+    auto lambda = []() -> double {
+        static double val = 1.0;
+        return val++;
+    };
 
-    //    std::cout << c << std::endl;
-    */
+    J.fillf(lambda);
+
+    std::cout << J << std::endl;
+    std::cout << J(1,2) << std::endl;
+
+    lao::Matrix<double, 1, 2> K(A);
+
+    std::cout << A << std::endl;
+    std::cout << K << std::endl;
+    std::cout << 5.0 * K << std::endl;
 
     return 0;
 }

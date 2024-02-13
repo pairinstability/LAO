@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <fstream>
+#include <functional>
 #include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
 #include <sstream>
@@ -27,7 +28,7 @@ public:
 
     SparseMatrix()
     {
-        csr.m_rowvec.resize(R + 1, value_type(0));
+        m_csr.m_rowvec.resize(R + 1, value_type(0));
     }
 
     SparseMatrix(const std::string& filename)
@@ -46,11 +47,128 @@ public:
             while (std::getline(iss, cell, ',')) {
                 value_type val = std::stod(cell);
                 if (val != 0)
-                    csr.insert(row, col, val);
+                    m_csr.insert(row, col, val);
                 ++col;
             }
             ++row;
         }
+    }
+
+    /// @brief Copy constructor.
+    SparseMatrix(const SparseMatrix& other)
+        : m_csr(other.m_csr)
+    {
+    }
+
+    SparseMatrix& operator=(const SparseMatrix& other)
+    {
+        if (&other != this)
+            m_csr = other.m_csr;
+        return *this;
+    }
+
+    /// @brief Operator for converting MatrixExpression <-> SparseMatrix
+    template <typename E>
+    SparseMatrix(const MatrixExpression<E, S, R, C>& expr)
+        : SparseMatrix()
+    {
+        for (size_t i = 0; i < R; ++i) {
+            for (size_t j = 0; j < C; ++j) {
+                value_type val = static_cast<value_type>(expr(i, j));
+                if (val != 0)
+                    m_csr.insert(i, j, val);
+            }
+        }
+    }
+
+    /// @brief operator overload for () to access elements.
+    value_type& operator()(size_t row, size_t col)
+    {
+        if (row > R || col > C)
+            throw std::out_of_range("Specified indices are out of range.");
+        return m_csr.get(row, col);
+    }
+
+    /// @brief operator overload for () to access elements.
+    const value_type& operator()(size_t row, size_t col) const
+    {
+        if (row > R || col > C)
+            throw std::out_of_range("Specified indices are out of range.");
+        return m_csr.get(row, col);
+    }
+
+    /// @brief Returns the number of rows.
+    size_t rows() const noexcept
+    {
+        return R;
+    }
+
+    /// @brief Returns the number of columns.
+    size_t cols() const noexcept
+    {
+        return C;
+    }
+
+    /// @brief Checks if the matrix is empty.
+    bool is_empty() const
+    {
+        return m_csr.m_values.empty();
+    }
+
+    /// @brief Sets all elements to zero.
+    /// @details Given this is a sparse matrix, we only store non-zero values so this
+    /// clears all of the storage vectors used in CSR.
+    void zeros()
+    {
+        m_csr.m_values.clear();
+        m_csr.m_colvec.clear();
+        m_csr.m_rowvec.clear();
+    }
+
+    /// @brief Sets all elements to the identity matrix.
+    void eye()
+    {
+        if constexpr (R == C) {
+            zeros();
+            for (size_t i = 0; i < std::min(R, C); ++i)
+                m_csr.insert(i, i, 1);
+        } else {
+            throw std::logic_error("Identity matrix is only defined for square matrices.");
+        }
+    }
+
+    /// @brief Sets all elements using a lambda function.
+    /// @details This is applying to every element, not just the non-zero elements.
+    void fillf(std::function<value_type()> lambda)
+    {
+        for (size_t i = 0; i < R; ++i) {
+            for (size_t j = 0; j < C; ++j) {
+                value_type val = m_csr.get(i, j);
+                if (val != 0) {
+                    m_csr.insert(i, j, lambda());
+                }
+            }
+        }
+    }
+
+    /// @brief Sets only the non-zero elements using a lambda function.
+    void fillfnz(std::function<value_type()> lambda)
+    {
+        for (size_t i = 0; i < m_csr.rows(); ++i) {
+            for (auto it = m_csr.row_begin(i); it != m_csr.row_end(i); ++it) {
+                size_t j = it->column;
+                value_type val = it->value;
+                m_csr.insert(i, j, lambda());
+            }
+        }
+    }
+
+    /// @brief Resets the matrix to empty.
+    /// @details Due to how the sparse matrix storage only stores non-zero values,
+    /// this is functionally equivalent to just zero-ing the matrix.
+    void reset()
+    {
+        zeros();
     }
 
 private:
@@ -87,7 +205,7 @@ private:
         }
     };
 
-    CSRStorage csr;
+    CSRStorage m_csr;
 };
 
 }; // namespace lao

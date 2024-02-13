@@ -119,15 +119,12 @@ member functions:
 - `reset()` sets the size to 0, removing all elements.
 
 
-
-
-
-
-
 Accessing elements
 ===
 
 element access is achieved with overloaded parentheses operators, for example `a(1,2)`.
+
+This library uses zero-indexing. one-indexing probably makes more sense, like MATLAB, but this is more convenient.
 
 
 functions that operate on matrices

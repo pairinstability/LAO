@@ -10,7 +10,6 @@
 #include <iostream>
 #include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
-#include <lao/core/math.hpp>
 #include <random>
 #include <stdexcept>
 #include <vector>
