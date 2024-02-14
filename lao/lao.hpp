@@ -4,6 +4,7 @@
 #include <lao/config.hpp>
 #include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
+#include <lao/dense/LU.hpp>
 #include <lao/dense/matrix.hpp>
 #include <lao/math/arithmetic.hpp>
 #include <lao/math/constraints.hpp>

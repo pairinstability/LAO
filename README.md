@@ -14,6 +14,7 @@ The build script `scripts/build.sh` can be used to build the examples or unit te
 Usage, for example:
 
 ```cpp
+#include "lao/dense/LU.hpp"
 #include <iostream>
 #include <lao/lao.hpp>
 
@@ -59,6 +60,18 @@ int main()
 
     std::cout << A << std::endl;
     std::cout << K << std::endl;
+    std::cout << 5.0 * K << std::endl;
+
+
+    lao::Matrix<double, 3, 3> L {{1,1,2}, {2,1,3}, {3, 1, 1}};
+    lao::Matrix<double, 3, 3> M;
+    lao::Matrix<double, 3, 3> N;
+
+    lao::LU_doolittle(L, M, N);
+
+    std::cout << M << std::endl;
+    std::cout << N << std::endl;
+
 
     return 0;
 }
