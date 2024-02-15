@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <lao/core/expression.hpp>
 #include <lao/core/forward.hpp>
 #include <random>
@@ -30,11 +31,115 @@ enum class filltype {
 /// It is templated with a Scalar parameter, and a Row and Column.
 /// The default storage mechanism is using std::vector with row-major ordering,
 /// though this can be swapped out assuming it has a linear access pattern.
+/// It also uses 1 indexing.
 template <typename S, size_t R, size_t C, typename B>
 class Matrix : public MatrixExpression<Matrix<S, R, C>, S, R, C> {
 public:
     using value_type = S;
     using storage_type = B;
+    using iterator = typename B::iterator;
+    using const_iterator = typename B::const_iterator;
+
+    class RowIterator {
+    public:
+        explicit RowIterator(size_t row, size_t col, Matrix<S, R, C>& matrix)
+            : current_row(row)
+            , current_col(col)
+            , matrix_ref(matrix)
+        {
+        }
+
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = S;
+        using difference_type = std::ptrdiff_t;
+        using pointer = S*;
+        using reference = S&;
+
+        reference operator*() const
+        {
+            return matrix_ref(current_row, current_col);
+        }
+
+        RowIterator& operator++()
+        {
+            ++current_col;
+            return *this;
+        }
+
+        bool operator==(const RowIterator& other) const
+        {
+            return (current_row == other.current_row) && (current_col == other.current_col);
+        }
+
+        bool operator!=(const RowIterator& other) const
+        {
+            return !(*this == other);
+        }
+
+        RowIterator begin() const {
+            return *this;
+        }
+
+        RowIterator end() const {
+            return RowIterator(current_row, matrix_ref.cols() + 1, matrix_ref);
+        }
+
+    private:
+        size_t current_row;
+        size_t current_col;
+        Matrix<S, R, C>& matrix_ref;
+    };
+
+    class ColIterator {
+    public:
+        ColIterator(size_t row, size_t col, Matrix<S, R, C>& matrix)
+            : current_row(row)
+            , current_col(col)
+            , matrix_ref(matrix)
+        {
+        }
+
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = S;
+        using difference_type = std::ptrdiff_t;
+        using pointer = S*;
+        using reference = S&;
+
+        reference operator*() const
+        {
+            return matrix_ref(current_row, current_col);
+        }
+
+        ColIterator& operator++()
+        {
+            ++current_row;
+            return *this;
+        }
+
+        bool operator==(const ColIterator& other) const
+        {
+            return (current_row == other.current_row) && (current_col == other.current_col);
+        }
+
+        bool operator!=(const ColIterator& other) const
+        {
+            return !(*this == other);
+        }
+
+    
+        ColIterator begin() const {
+            return *this;
+        }
+
+        ColIterator end() const {
+            return ColIterator(matrix_ref.rows()+1, current_col, matrix_ref);
+        }
+
+    private:
+        size_t current_row;
+        size_t current_col;
+        Matrix<S, R, C>& matrix_ref;
+    };
 
     /// @brief Default constructor which zero initializes the matrix.
     Matrix()
@@ -105,25 +210,25 @@ public:
     Matrix(const MatrixExpression<E, S, R, C>& expr)
         : m_elements(R * C, value_type(0))
     {
-        for (size_t i = 0; i < R; ++i)
-            for (size_t j = 0; j < C; ++j)
-                m_elements[i * C + j] = static_cast<value_type>(expr(i, j));
+        for (size_t i = 1; i < R+1; ++i)
+            for (size_t j = 1; j < C+1; ++j)
+                m_elements[(i-1) * C + (j-1)] = static_cast<value_type>(expr(i, j));
     }
 
     /// @brief operator overload for () to access elements.
     value_type& operator()(size_t row, size_t col)
     {
-        if (row > R || col > C)
+        if (row > R + 1 || col > C + 1)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row * C + col];
+        return m_elements[(row-1) * C + (col-1)];
     }
 
     /// @brief operator overload for () to access elements.
     const value_type& operator()(size_t row, size_t col) const
     {
-        if (row > R || col > C)
+        if (row > R + 1|| col > C + 1)
             throw std::out_of_range("Specified indices are out of range.");
-        return m_elements[row * C + col];
+        return m_elements[(row-1) * C + (col-1)];
     }
 
     /// @brief Returns the number of rows.
@@ -136,6 +241,42 @@ public:
     size_t cols() const noexcept
     {
         return C;
+    }
+
+    /// @brief Returns an iterator to the first element of a row.
+    /// @param row The row number, 0 indexed.
+    RowIterator row_begin(const size_t row)
+    {
+        if (row > R + 1)
+            throw std::out_of_range("Row index is out of range.");
+        return RowIterator(row, 1, *this);
+    }
+
+    /// @brief Returns an iterator to the last element of a row.
+    /// @param row The row number, 0 indexed.
+    RowIterator row_end(const size_t row)
+    {
+        if (row > R + 1)
+            throw std::out_of_range("Row index is out of range.");
+        return RowIterator(row, C, *this);
+    }
+
+    /// @brief Returns an iterator to the first element of a col.
+    /// @param col The col number, 0 indexed.
+    ColIterator col_begin(const size_t col)
+    {
+        if (col > C + 1)
+            throw std::out_of_range("Col index is out of range.");
+        return ColIterator(1, col, *this);
+    }
+
+    /// @brief Returns an iterator to the last element of a col.
+    /// @param col The col number, 0 indexed.
+    ColIterator col_end(const size_t col)
+    {
+        if (col > C + 1)
+            throw std::out_of_range("Col index is out of range.");
+        return ColIterator(R, col, *this);
     }
 
     /// @brief Checks if the matrix is empty.
@@ -201,8 +342,8 @@ public:
     /// @brief Printing method implementation, for printing the matrix.
     friend std::ostream& operator<<(std::ostream& os, const Matrix<S, R, C>& matrix)
     {
-        for (size_t i = 0; i < R; ++i) {
-            for (size_t j = 0; j < C; ++j) {
+        for (size_t i = 1; i < R+1; ++i) {
+            for (size_t j = 1; j < C+1; ++j) {
                 os << matrix(i, j) << " ";
             }
             os << std::endl;

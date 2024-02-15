@@ -21,17 +21,17 @@ void LU_doolittle(const Matrix<S, R, C>& A, Matrix<S, R, C>& L, Matrix<S, R, C>&
     L.eye();
     U.zeros();
 
-    for (size_t j = 0; j < R; ++j) {
-        for (size_t i = j; i < C; ++i) {
+    for (size_t j = 1; j < R+1; ++j) {
+        for (size_t i = j; i < C+1; ++i) {
             S sum = 0;
-            for (size_t k = 0; k < j; ++k)
+            for (size_t k = 1; k < j; ++k)
                 sum += L(j, k) * U(k, i);
             U(j, i) = A(j, i) - sum;
         }
 
-        for (size_t i = j + 1; i < R; ++i) {
+        for (size_t i = j + 1; i < R+1; ++i) {
             S sum = 0;
-            for (size_t k = 0; k < j; ++k)
+            for (size_t k = 1; k < j; ++k)
                 sum += L(i, k) * U(k, j);
             L(i, j) = (A(i, j) - sum) / U(j, j);
         }

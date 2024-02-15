@@ -10,5 +10,6 @@
 #include <lao/math/constraints.hpp>
 #include <lao/math/fundamental.hpp>
 #include <lao/sparse/sparse_matrix.hpp>
+#include <lao/dense/jacobi.hpp>
 
 #endif // LAO_LAO_H_

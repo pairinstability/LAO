@@ -11,8 +11,8 @@ template <typename S, size_t R, size_t C, typename E>
 S accumulate(const MatrixExpression<E, S, R, C>& matrix)
 {
     S sum = 0;
-    for (size_t i = 0; i < matrix.rows(); ++i) {
-        for (size_t j = 0; j < matrix.cols(); ++j) {
+    for (size_t i = 1; i < matrix.rows()+1; ++i) {
+        for (size_t j = 1; j < matrix.cols()+1; ++j) {
             sum += matrix(i, j);
         }
     }
@@ -66,7 +66,7 @@ requires EnforceSquareMatrix<S, R, C>
     S trace(const MatrixExpression<E, S, R, C>& matrix)
 {
     S sum = 0;
-    for (size_t i = 0; i < std::min(matrix.rows(), matrix.cols()); ++i) {
+    for (size_t i = 1; i < std::min(matrix.rows()+1, matrix.cols()+1); ++i) {
         sum += matrix(i, i);
     }
     return sum;

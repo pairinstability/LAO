@@ -83,7 +83,7 @@ public:
     S operator()(size_t row, size_t col) const
     {
         S dot_product = S();
-        for (size_t i = 0; i < m_lhs.cols(); ++i) {
+        for (size_t i = 1; i < m_lhs.cols()+1; ++i) {
             dot_product += m_lhs(row, i) * m_rhs(i, col);
         }
         return dot_product;
