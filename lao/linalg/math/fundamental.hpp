@@ -20,19 +20,19 @@ namespace linalg {
         return sum;
     }
 
-    /// @brief Calculates the determinant of a matrix.
-    template <typename S, size_t R, size_t C, typename E>
-    S det(const MatrixExpression<E, S, R, C>& matrix)
-    {
-        // TODO
-    }
-
-    /// @brief Calculates the rank of a matrix.
-    template <typename S, size_t R, size_t C, typename E>
-    size_t rank(const MatrixExpression<E, S, R, C>& matrix)
-    {
-        // TODO
-    }
+//    /// @brief Calculates the determinant of a matrix.
+//    template <typename S, size_t R, size_t C, typename E>
+//    S det(const MatrixExpression<E, S, R, C>& matrix)
+//    {
+//        // TODO
+//    }
+//
+//    /// @brief Calculates the rank of a matrix.
+//    template <typename S, size_t R, size_t C, typename E>
+//    size_t rank(const MatrixExpression<E, S, R, C>& matrix)
+//    {
+//        // TODO
+//    }
 
     template <typename S, size_t R, size_t C, typename E>
     class MatrixTranspose : public MatrixExpression<MatrixTranspose<S, R, C, E>, S, C, R> {
@@ -73,32 +73,32 @@ namespace linalg {
         return sum;
     }
 
-    template <typename S, size_t R, size_t C, typename E>
-    class MatrixInverse : public MatrixExpression<MatrixInverse<S, R, C, E>, S, C, R> {
-    public:
-        using value_type = S;
+//    template <typename S, size_t R, size_t C, typename E>
+//    class MatrixInverse : public MatrixExpression<MatrixInverse<S, R, C, E>, S, C, R> {
+//    public:
+//        using value_type = S;
+//
+//        MatrixInverse(const MatrixExpression<E, S, R, C>& matrix)
+//            : m_matrix(matrix)
+//        {
+//        }
+//
+//        S operator()(size_t row, size_t col) const override
+//        {
+//        }
+//
+//    private:
+//        const MatrixExpression<E, S, R, C>& m_matrix;
+//    };
 
-        MatrixInverse(const MatrixExpression<E, S, R, C>& matrix)
-            : m_matrix(matrix)
-        {
-        }
-
-        S operator()(size_t row, size_t col) const override
-        {
-        }
-
-    private:
-        const MatrixExpression<E, S, R, C>& m_matrix;
-    };
-
-    /// @brief Calculates the inverse of a matrix.
-    /// @details Only works for square matrices.
-    template <typename S, size_t R, size_t C, typename E>
-    requires EnforceSquareMatrix<S, R, C>
-    auto inv(const MatrixExpression<E, S, R, C>& matrix)
-    {
-        // TODO
-    }
+//    /// @brief Calculates the inverse of a matrix.
+//    /// @details Only works for square matrices.
+//    template <typename S, size_t R, size_t C, typename E>
+//    requires EnforceSquareMatrix<S, R, C>
+//    auto inv(const MatrixExpression<E, S, R, C>& matrix)
+//    {
+//        // TODO
+//    }
 
 }; // namespace linalg
 }; // namespace lao

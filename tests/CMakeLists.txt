@@ -16,3 +16,5 @@ function(create_test name)
 endfunction()
 
 create_test(test_dense_matrix)
+create_test(test_matrix_math)
+create_test(test_astro_body)

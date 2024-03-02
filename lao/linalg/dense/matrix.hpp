@@ -222,7 +222,7 @@ namespace linalg {
         /// @brief operator overload for () to access elements.
         value_type& operator()(size_t row, size_t col)
         {
-            if (row > R + 1 || col > C + 1)
+            if (row > R || col > C || row == 0 || col == 0)
                 throw std::out_of_range("Specified indices are out of range.");
             return m_elements[(row - 1) * C + (col - 1)];
         }
@@ -230,7 +230,7 @@ namespace linalg {
         /// @brief operator overload for () to access elements.
         const value_type& operator()(size_t row, size_t col) const
         {
-            if (row > R + 1 || col > C + 1)
+            if (row > R || col > C || row == 0 || col == 0)
                 throw std::out_of_range("Specified indices are out of range.");
             return m_elements[(row - 1) * C + (col - 1)];
         }
@@ -251,7 +251,7 @@ namespace linalg {
         /// @param row The row number, 0 indexed.
         RowIterator row_begin(const size_t row)
         {
-            if (row > R + 1)
+            if (row > R || row == 0)
                 throw std::out_of_range("Row index is out of range.");
             return RowIterator(row, 1, *this);
         }
@@ -260,7 +260,7 @@ namespace linalg {
         /// @param row The row number, 0 indexed.
         RowIterator row_end(const size_t row)
         {
-            if (row > R + 1)
+            if (row > R || row == 0)
                 throw std::out_of_range("Row index is out of range.");
             return RowIterator(row, C, *this);
         }
@@ -269,7 +269,7 @@ namespace linalg {
         /// @param col The col number, 0 indexed.
         ColIterator col_begin(const size_t col)
         {
-            if (col > C + 1)
+            if (col > C || col == 0)
                 throw std::out_of_range("Col index is out of range.");
             return ColIterator(1, col, *this);
         }
@@ -278,7 +278,7 @@ namespace linalg {
         /// @param col The col number, 0 indexed.
         ColIterator col_end(const size_t col)
         {
-            if (col > C + 1)
+            if (col > C || col == 0)
                 throw std::out_of_range("Col index is out of range.");
             return ColIterator(R, col, *this);
         }
@@ -319,7 +319,7 @@ namespace linalg {
         {
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_real_distribution<value_type> dis(0.0, 1.0);
+            std::uniform_int_distribution<value_type> dis(std::numeric_limits<value_type>::min(), std::numeric_limits<value_type>::max());
             for (size_t i = 0; i < m_elements.size(); ++i)
                 m_elements[i] = dis(gen);
         }
